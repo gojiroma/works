@@ -176,33 +176,6 @@
             color: #a35900;
         }
 
-        .year-section {
-            margin-bottom: 15px;
-        }
-
-        .year-header {
-            font-weight: bold;
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-
-        .year-header::before {
-            content: "▶";
-            margin-right: 8px;
-            font-size: 0.8em;
-        }
-
-        .year-header.collapsed::before {
-            content: "▼";
-        }
-
-        .month-list {
-            margin-left: 15px;
-        }
-
         /* --- Mobile (<=768px) --- */
         @media (max-width: 768px) {
             .container {
@@ -267,11 +240,10 @@
     <h1>誤字ロマ's works</h1>
     <div class="container">
         <div class="main-content">
-            {% for year, months in yearly_calendar.items() %}
-            {% for month, days in months.items() %}
-            <div id="month-{{ year }}-{{ month }}"></div>
+            {% for month, days in yearly_calendar.items() %}
+            <div id="month-{{ month }}"></div>
             {% for day in days %}
-            <h2 class="date-header">{{ year }}年{{ month }}月{{ day.date.day }}日</h2>
+            <h2 class="date-header">{{ month }}月{{ day.date.day }}日</h2>
             {% for event in day.events %}
             <a href="{{ event.location }}" target="_blank" class="work-link work-entry"
                 style="text-decoration: none; color: inherit;" data-tags="{{ event.tags|join(',') }}">
@@ -309,21 +281,14 @@
             </div>
             <button class="filter-reset-btn" id="reset-btn" style="display:none">フィルターを解除</button>
             <hr />
-            <h3>年別作品数</h3>
-            {% for year, months in yearly_calendar.items() %}
-            <div class="year-section">
-                <div class="year-header" onclick="toggleYear('{{ year }}')">{{ year }}年</div>
-                <div class="month-list" id="year-{{ year }}">
-                    <ul>
-                        {% for month, cnt in monthly_counts[year].items() %}
-                        <li>
-                            <a href="#month-{{ year }}-{{ month }}">{{ month }}月 ({{ cnt }}個)</a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            {% endfor %}
+            <h3>月別作品数</h3>
+            <ul>
+                {% for month, cnt in monthly_counts.items() %}
+                <li>
+                    <a href="#month-{{ month }}">{{ month }}月 ({{ cnt }}個)</a>
+                </li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
     <script>
@@ -366,14 +331,6 @@
         }
         tags.forEach(tg => tg.onclick = (e) => { e.preventDefault(); e.stopPropagation(); setTagFilter(tg.dataset.tag); });
         document.getElementById('reset-btn').onclick = clearTagFilter;
-
-        // 年折りたたみ
-        function toggleYear(year) {
-            const header = event.currentTarget;
-            const monthList = document.getElementById(`year-${year}`);
-            header.classList.toggle('collapsed');
-            monthList.style.display = monthList.style.display === 'none' ? '' : 'none';
-        }
 
         // 初期状態で見出しは全て表示されるはずだが、念のため同期
         updateDateHeadersVisibility();
