@@ -314,11 +314,13 @@
             <div class="year-section">
                 <div class="year-header" onclick="toggleYear('{{ year }}')">{{ year }}年</div>
                 <div class="month-list" id="year-{{ year }}">
-                    {% for month, cnt in monthly_counts[year].items() %}
-                    <li>
-                        <a href="#month-{{ year }}-{{ month }}">{{ month }}月 ({{ cnt }}個)</a>
-                    </li>
-                    {% endfor %}
+                    <ul>
+                        {% for month, cnt in monthly_counts[year].items() %}
+                        <li>
+                            <a href="#month-{{ year }}-{{ month }}">{{ month }}月 ({{ cnt }}個)</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
             {% endfor %}
