@@ -176,7 +176,23 @@
             color: #a35900;
         }
 
-        /* --- Mobile (<=768px) --- */
+        .year-section {
+            margin-bottom: 15px;
+        }
+
+        .year-header {
+            font-weight: bold;
+            padding: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .month-list {
+            margin-left: 15px;
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -240,10 +256,13 @@
     <h1>誤字ロマ's works</h1>
     <div class="container">
         <div class="main-content">
-            {% for month, days in yearly_calendar.items() %}
-            <div id="month-{{ month }}"></div>
+            {% for year, months in yearly_calendar.items() %}
+            {% for month, days in months.items() %}
             {% for day in days %}
-            <h2 class="date-header">{{ month }}月{{ day.date.day }}日</h2>
+            <h2 class="date-header">
+                {{ year }}年{{ month }}月{{ day.date.day }}日（{{ ['月', '火', '水', '木', '金', '土', '日'][day.date.weekday()]
+                }}）
+            </h2>
             {% for event in day.events %}
             <a href="{{ event.location }}" target="_blank" class="work-link work-entry"
                 style="text-decoration: none; color: inherit;" data-tags="{{ event.tags|join(',') }}">
@@ -270,6 +289,7 @@
             {% endfor %}
             {% endfor %}
             {% endfor %}
+            {% endfor %}
         </div>
         <div class="sidebar">
             <h3>タグ</h3>
@@ -281,18 +301,22 @@
             </div>
             <button class="filter-reset-btn" id="reset-btn" style="display:none">フィルターを解除</button>
             <hr />
-            <h3>月別作品数</h3>
-            <ul>
-                {% for month, cnt in monthly_counts.items() %}
-                <li>
-                    <a href="#month-{{ month }}">{{ month }}月 ({{ cnt }}個)</a>
-                </li>
-                {% endfor %}
-            </ul>
+            <h3>年別作品数</h3>
+            {% for year, count in yearly_counts.items() %}
+            <div class="year-section">
+                <div class="year-header">
+                    {{ year }}年（{{ count }}個）
+                </div>
+                <ul class="month-list">
+                    {% for month, cnt in yearly_monthly_counts[year].items() %}
+                    <li><a href="#month-{{ month }}">{{ month }}月 ({{ cnt }}個)</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
         </div>
     </div>
     <script>
-        // タグクリック絞り込み
         const tags = Array.from(document.querySelectorAll('.tag'));
         const workEntries = Array.from(document.querySelectorAll('.work-entry'));
         let activeTag = null;
@@ -331,8 +355,6 @@
         }
         tags.forEach(tg => tg.onclick = (e) => { e.preventDefault(); e.stopPropagation(); setTagFilter(tg.dataset.tag); });
         document.getElementById('reset-btn').onclick = clearTagFilter;
-
-        // 初期状態で見出しは全て表示されるはずだが、念のため同期
         updateDateHeadersVisibility();
     </script>
 </body>
